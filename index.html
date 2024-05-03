@@ -120,7 +120,7 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
         const containerName = 'facestorage';
         const blobServiceUrl = `https://facefinderstorageproject.blob.core.windows.net`;
 
-        const blobUrl = `${blobServiceUrl}/${containerName}/${blobName}`;
+        const blobUrl = `${blobServiceUrl}/${containerName}/`;
 
         try {
             const response = await fetch(blobUrl, {

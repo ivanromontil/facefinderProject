@@ -104,14 +104,45 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
     
     <form id="uploadForm" enctype="multipart/form-data">
         <input type="file" id="imageInput" accept="image/*" required>
-        <button id ="select-button" type="button" >Cargar Imagen</button>
+        <button type="button" onclick="uploadImage()">Cargar Imagen</button>
     </form>
 
 
 
 </div>
 </body>
-<script src = "index.js"></script>
+<script>
+    async function uploadImage() {
+        const fileInput = document.getElementById('imageInput');
+        const file = fileInput.files[0];
+        const blobName = file.name;
+
+        const containerName = 'facestorage';
+        const blobServiceUrl = `https://facefinderstorageproject.blob.core.windows.net`;
+
+        const blobUrl = `${blobServiceUrl}/${containerName}/${blobName}`;
+
+        try {
+            const response = await fetch(blobUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': file.type
+                },
+                body: file
+            });
+
+
+            if (response.ok) {
+                alert('Imagen cargada con éxito');
+            } else {
+                throw new Error('Error al cargar la imagen');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error al cargar la imagen');
+        }
+    }
+</script>
 </html>
 
 

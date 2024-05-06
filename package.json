@@ -9,14 +9,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "browserlist": [
     "last 1 Edge version",
     "last 1 Chrome version",
     "last 1 Firefox version"
   ],
   "dependencies": {
-    "@azure/storage-blob": "^12.17.0",
-    "regenerator-runtime": "^0.14.1"
+    "@azure/storage-blob": "^12.17.0"
   }
 }

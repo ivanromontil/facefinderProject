@@ -125,7 +125,6 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
         try {
             const response = await fetch(blobUrl, {
                 method: 'PUT',
-                mode: 'no-cors', // Agregar el modo no-cors
                 headers: {
                     'Content-Type': file.type
                 },

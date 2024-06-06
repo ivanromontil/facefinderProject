@@ -25,28 +25,6 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
 </div>
 
 <script>
-    async function sendDataToCosmosDB(url) {
-        try {
-            const response = await fetch('/api/createEntry', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ url })
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                console.log('URL sent to Cosmos DB:', result);
-            } else {
-                throw new Error('Failed to send URL to Cosmos DB');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Error sending URL to Cosmos DB');
-        }
-    }
-
     function processImage() {
         var subscriptionKey = "1c8a0938df024623a98b21251f299565";
         var uriBase = "https://feelfinderai.cognitiveservices.azure.com/face/v1.0/detect";
@@ -87,6 +65,7 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
                 context.stroke();
             });
 
+            // Llamada para guardar en Cosmos DB
             sendDataToCosmosDB(sourceImageUrl);
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
@@ -95,7 +74,84 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
             alert(errorString);
         });
     }
+
+    function sendDataToCosmosDB(imageUrl) {
+        const data = {
+            id: new Date().getTime().toString(),
+            url: imageUrl
+        };
+
+        const gql = `
+        mutation create($item: CreateImageInput!) {
+            createImage(item: $item) {
+                id
+                url
+            }
+        }`;
+
+        const query = {
+            query: gql,
+            variables: {
+                item: data
+            }
+        };
+
+        const endpoint = "/data-api/graphql";
+        fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(query)
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log("Image saved to Cosmos DB:", result.data.createImage);
+        })
+        .catch(error => console.error("Error saving image to Cosmos DB:", error));
+    }
+
+    async function list() {
+        const query = `
+            {
+                images {
+                    items {
+                        id
+                        url
+                    }
+                }
+            }`;
+            
+        const endpoint = "/data-api/graphql";
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: query })
+        });
+        const result = await response.json();
+
+        const imageList = result.data.images.items;
+        const listContainer = document.getElementById("imageList");
+
+        // Limpiar la lista antes de agregar nuevos elementos
+        listContainer.innerHTML = "";
+
+        imageList.forEach(image => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `ID: ${image.id}, URL: ${image.url}`;
+            listContainer.appendChild(listItem);
+        });
+
+        console.table(imageList); // Mostrar en consola también
+    }
+
+
+
 </script>
+<div>
+    <button id="list" onclick="list()">List</button>
+</div>
+<div id="imageList">
+    <!-- Aquí se mostrará la lista -->
+</div>
 
 
 <h1>Static Web Apps Database Connections</h1>

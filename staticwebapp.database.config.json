@@ -9,5 +9,16 @@
     "navigationFallback": {
         "rewrite": "index.html",
         "exclude": ["/api/*"]
+    },
+    "backend": {
+        "api": {
+            "basePath": "api",
+            "routes": [
+                {
+                    "route": "/createEntry",
+                    "methods": ["POST"]
+                }
+            ]
+        }
     }
 }

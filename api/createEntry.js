@@ -3,8 +3,8 @@ const { CosmosClient } = require("@azure/cosmos");
 
 const config = require('../config');
 
-const endpoint = config.endpoint;
-const key = config.key;
+const endpoint = process.env.CosmosDBEndpoint;
+const key = process.env.CosmosDBKey;
 const databaseId = config.database.id;
 const containerId = config.container.id;
 

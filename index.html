@@ -143,28 +143,52 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
         console.table(imageList); // Mostrar en consola también
     }
 
+    async function listImages() {
+        const query = `
+        {
+            images {
+                items {
+                    id
+                    url
+                }
+            }
+        }`;
+
+        const endpoint = "/data-api/graphql";
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query })
+            });
+            const result = await response.json();
+            const imageList = result.data.images.items;
+
+            const listContainer = document.getElementById("imageList");
+            listContainer.innerHTML = "";
+
+            imageList.forEach(image => {
+                const listItem = document.createElement("div");
+                listItem.textContent = `ID: ${image.id}, URL: ${image.url}`;
+                listContainer.appendChild(listItem);
+            });
+
+            console.table(imageList); // Mostrar en consola también
+        } catch (error) {
+            console.error("Error listing images:", error);
+        }
+    }
+
 
 
 </script>
 <div>
-    <button id="list" onclick="list()">List</button>
+    <button id="list" onclick="listImages()">List</button>
 </div>
 <div id="imageList">
     <!-- Aquí se mostrará la lista -->
 </div>
 
-
-<h1>Static Web Apps Database Connections</h1>
-<blockquote>
-    Open the console in the browser developer tools to see the API responses.
-</blockquote>
-<div>
-    <button id="list" onclick="list()">List</button>
-    <button id="get" onclick="get()">Get</button>
-    <button id="update" onclick="update()">Update</button>
-    <button id="create" onclick="create()">Create</button>
-    <button id="delete" onclick="del()">Delete</button>
-</div>
 <script>
     async function list() {
         const query = `
@@ -216,42 +240,6 @@ const gql = `
         console.table(result.data.person_by_pk);
     }
 
-    async function update() {
-
-        const id = '1';
-        const data = {
-        id: id,
-        Name: "Molly"
-        };
-
-        const gql = `
-        mutation update($id: ID!, $_partitionKeyValue: String!, $item: UpdatePersonInput!) {
-            updatePerson(id: $id, _partitionKeyValue: $_partitionKeyValue, item: $item) {
-            id
-            Name
-            }
-        }`;
-
-        const query = {
-        query: gql,
-        variables: {
-            id: id,
-            _partitionKeyValue: id,
-            item: data
-        } 
-        };
-
-        const endpoint = "/data-api/graphql";
-        const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(query)
-        });
-
-        const result = await res.json();
-        console.table(result.data.updatePerson);
-    }
-
     async function create(url) {
 
         const data = {
@@ -285,36 +273,6 @@ const gql = `
         console.table(response.data.createPerson);
     }
 
-
-    async function del() {
-
-        const id = '3';
-
-        const gql = `
-        mutation del($id: ID!, $_partitionKeyValue: String!) {
-            deletePerson(id: $id, _partitionKeyValue: $_partitionKeyValue) {
-            id
-            }
-        }`;
-
-        const query = {
-        query: gql,
-        variables: {
-            id: id,
-        _partitionKeyValue: id
-        }
-        };
-
-        const endpoint = "/data-api/graphql";
-        const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(query)
-        });
-
-        const result = await response.json();
-        console.log(`Record deleted: ${ JSON.stringify(result.data) }`);
-    }
 </script>
 </body>
 </html>

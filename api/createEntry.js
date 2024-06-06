@@ -8,6 +8,14 @@ const databaseId = 'my-database';
 const containerId = 'my-container';
 
 module.exports = async function (context, req) {
+    if (req.method !== 'POST') {
+        context.res = {
+            status: 405,
+            body: 'Method Not Allowed'
+        };
+        return;
+    }
+
     const { url } = req.body;
 
     try {

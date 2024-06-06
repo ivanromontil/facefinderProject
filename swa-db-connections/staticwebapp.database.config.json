@@ -31,5 +31,21 @@
       "mode": "production"
     }
   },
+  "routes": [
+        {
+            "route": "/api/*",
+            "allowedRoles": ["anonymous"],
+            "methods": ["GET", "POST"]
+        },
+        {
+            "route": "/api/createEntry/index.js",
+            "allowedRoles": ["anonymous"],
+            "methods": ["GET", "POST"]
+        }
+    ],
+    "navigationFallback": {
+        "rewrite": "index.html",
+        "exclude": ["/api/*"]
+    },
   "entities": {}
 }

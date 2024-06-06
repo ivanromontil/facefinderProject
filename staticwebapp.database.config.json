@@ -3,7 +3,8 @@
     "routes": [
         {
             "route": "/api/*",
-            "allowedRoles": ["anonymous"]
+            "allowedRoles": ["anonymous"],
+            "methods": ["GET", "POST"]
         }
     ],
     "navigationFallback": {

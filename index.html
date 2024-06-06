@@ -252,11 +252,11 @@ const gql = `
         console.table(result.data.updatePerson);
     }
 
-    async function create() {
+    async function create(url) {
 
         const data = {
-        id: "3",
-        Name: "Pedro"
+        id: url,
+        Name: url
         };
 
         const gql = `

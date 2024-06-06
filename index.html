@@ -25,7 +25,7 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
     </div>
 </div>
 
-<script>
+<!-- <script>
     function processImage() {
         var subscriptionKey = "1c8a0938df024623a98b21251f299565";
         var uriBase = "https://feelfinderai.cognitiveservices.azure.com/face/v1.0/detect";
@@ -191,7 +191,7 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
 
 
 
-</script>
+</script> -->
 <div>
     <button id="list" onclick="listImages()">List</button>
 </div>
@@ -199,7 +199,7 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
     <!-- Aquí se mostrará la lista -->
 </div>
 
-<script>
+<!-- <script>
     async function list() {
         const query = `
             {
@@ -283,6 +283,7 @@ const gql = `
         console.table(response.data.createPerson);
     }
 
-</script>
+</script> -->
+<script src="./detectFaces.js"></script>
 </body>
 </html>

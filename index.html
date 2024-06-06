@@ -2,11 +2,61 @@
 <html>
 <head>
     <title>Detect Faces Sample</title>
+    <link rel="stylesheet" href="detectFaces.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 </head>
 <body>
+    <header>
+        <h1>DetectFaces</h1>
+        <hr>
+        <section class="f2">
+            <div class="c1">
+                <h2>Analitza cares</h2>
+                <p>1: Copia una url d'una imatge</p>
+                <p>2: Clica el butto</p>
+                <p>3: Enganxa la url</p>
+            </div>
+            <div class="c2">
+                <img src="https://cdn1.iconfinder.com/data/icons/hawcons/32/700118-icon-20-clouds-1024.png" width="80%">
+                <br>URL:
+                <input type="text" name="inputImage" id="inputImage"
+                         value="https://www.linguahouse.com/linguafiles/md5/d70f2b461a293bb128cabb384628342c"/>
+                <button onclick="processImage()">Analyze face</button>
+
+            </div>
+        </section>
+        <hr>
+        <section class="f3">
+            <div id="wrapper" style="width:1020px; display:table;">
+                <div id="imageDiv" style="width:420px; display:table-cell;">
+                    Source image:<br><br>
+                    <canvas id="canvas" width="400"></canvas>
+                    <img id="sourceImage" width="400"/>
+                </div>
+                <div id="jsonOutput" style="width:600px; display:table-cell;">
+                    Response:<br><br>
+                    <textarea id="responseTextArea" class="UIInput"
+                              style="width:580px; height:400px;"></textarea>
+                </div>
+                
+            </div>
+        <hr>
+        </section>
+        <section class="f4">
+            <div>
+                <button id="list" onclick="listImages()">List</button>
+            </div>
+            <div id="imageList">
+                <!-- Aquí se mostrará la lista -->
+            </div>
+        </section>
+
+
+    </header>
+
+
 <h1>Detect Faces:</h1>
-<h1>Holaaa!!</h1>
+<!-- <h1>Holaaa!!</h1>
 Enter the URL to an image that includes a face or faces, then click
 the <strong>Analyze face</strong> button.<br><br>
 Image to analyze: <input type="text" name="inputImage" id="inputImage"
@@ -23,7 +73,7 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
         <canvas id="canvas" width="400"></canvas>
         <img id="sourceImage" width="400"/>
     </div>
-</div>
+</div> -->
 
 <!-- <script>
     function processImage() {
@@ -192,12 +242,12 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
 
 
 </script> -->
-<div>
+<!-- <div>
     <button id="list" onclick="listImages()">List</button>
 </div>
 <div id="imageList">
-    <!-- Aquí se mostrará la lista -->
-</div>
+     Aquí se mostrará la lista 
+</div> -->
 
 <!-- <script>
     async function list() {

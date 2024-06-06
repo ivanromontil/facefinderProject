@@ -162,18 +162,27 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
             body: JSON.stringify({ query: query })
         });
         const result = await response.json();
-        console.table(result.data.people.items);
+        if (result.data && result.data.people && result.data.people.items) {
+            const people = result.data.people.items;
 
-            const listContainer = document.getElementById("imageList");
-            listContainer.innerHTML = "";
-
-            imageList.forEach(image => {
-                const listItem = document.createElement("div");
-                listItem.textContent = `ID: ${image.id}, URL: ${image.url}`;
-                listContainer.appendChild(listItem);
+           
+            let html = "<ul>";
+            people.forEach(person => {
+                html += `<li>${person.Name}</li>`;
             });
+            html += "</ul>";
 
-            console.table(imageList); // Mostrar en consola también
+            
+            const peopleListElement = document.getElementById("peopleList");
+            if (peopleListElement) {
+                peopleListElement.innerHTML = html;
+            } else {
+                console.error("Element with id 'peopleList' not found.");
+            }
+        } else {
+            console.error("No data found in response.");
+        }
+
         } catch (error) {
             console.error("Error listing images:", error);
         }

@@ -1,167 +1,91 @@
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Detect Faces Sample</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-</head>
-<body>
-<h1>Detect Faces:</h1>
-Enter the URL to an image that includes a face or faces, then click
-the <strong>Analyze face</strong> button.<br><br>
-Image to analyze: <input type="text" name="inputImage" id="inputImage"
-                         value="https://upload.wikimedia.org/wikipedia/commons/c/c3/RH_Louise_Lillian_Gish.jpg"/>
-<button onclick="processImage()">Analyze face</button><br><br>
-<div id="wrapper" style="width:1020px; display:table;">
-    <div id="jsonOutput" style="width:600px; display:table-cell;">
-        Response:<br><br>
-        <textarea id="responseTextArea" class="UIInput"
-                  style="width:580px; height:400px;"></textarea>
-    </div>
-    <div id="imageDiv" style="width:420px; display:table-cell;">
-        Source image:<br><br>
-        <canvas id="canvas" width="400"></canvas>
-        <img id="sourceImage" width="400"/>
-    </div>
-</div>
-
-<script> 
-    const { CosmosClient } = require("@azure/cosmos");
-
-    const endpoint = process.env.COSMOS_DB_CONNECTION_STRING;
-    const key = process.env.COSMOS_DB_KEY;
-
-    const client = new CosmosClient({ endpoint, key });
-
-    async function createDatabaseAndContainer() {
-        const { database } = await client.databases.createIfNotExists({ id: "my-database" });
-        const { container } = await database.containers.createIfNotExists({ id: "my-container" });
-        console.log(`Database and container created: ${database.id}, ${container.id}`);
-    }
-
-    createDatabaseAndContainer().catch(console.error);
-</script>
-<script type="text/javascript">
-    function processImage() {
-        var subscriptionKey = "1c8a0938df024623a98b21251f299565";
-        var uriBase =
-            "https://feelfinderai.cognitiveservices.azure.com/face/v1.0/detect";
-
-        // Request parameters.
-        var params = {
-            "detectionModel": "detection_03",
-            "returnFaceId": "true"
-        };
-
-        // Display the image.
-        var sourceImageUrl = document.getElementById("inputImage").value;
-        document.querySelector("#sourceImage").src = sourceImageUrl;
-
-        // Perform the REST API call.
-        $.ajax({
-            url: uriBase + "?" + $.param(params),
-
-            // Request headers.
-            beforeSend: function (xhrObj) {
-                xhrObj.setRequestHeader("Content-Type", "application/json");
-                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
-            },
-
-            type: "POST",
-
-            // Request body.
-            data: '{"url": ' + '"' + sourceImageUrl + '"}',
-        })
-
-            .done(function (data) {
-                // Show formatted JSON on webpage.
-                $("#responseTextArea").val(JSON.stringify(data, null, 2));
-
-                // Draw rectangles around detected faces
-                var canvas = document.getElementById("canvas");
-                var context = canvas.getContext("2d");
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                var img = document.getElementById('sourceImage');
-                canvas.width = img.width*2;
-                canvas.height = img.height*2;
-                context.drawImage(img, 0, 0);
-                context.strokeStyle = 'red';
-                context.lineWidth = 2;
-                data.forEach(function (face) {
-                    var faceRectangle = face.faceRectangle;
-                    context.beginPath();
-                    context.rect(faceRectangle.left, faceRectangle.top, faceRectangle.width, faceRectangle.height);
-                    context.stroke();
-                });
-            })
-
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                // Display error message.
-                var errorString = (errorThrown === "") ?
-                    "Error. " : errorThrown + " (" + jqXHR.status + "): ";
-                errorString += (jqXHR.responseText === "") ?
-                    "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
-                        jQuery.parseJSON(jqXHR.responseText).message :
-                        jQuery.parseJSON(jqXHR.responseText).error.message;
-                alert(errorString);
-            });
-    };
-</script>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<div>
-
-
-    <h1>Cargar Imagen a Azure Blob Storage</h1>
-    
-    <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" id="imageInput" accept="image/*" required>
-        <button type="button" onclick="uploadImage()">Cargar Imagen</button>
-    </form>
-
-
-
-</div>
-</body>
 <script>
-    async function uploadImage() {
-        const fileInput = document.getElementById('imageInput');
-        const file = fileInput.files[0];
-        const blobName = file.name;
-
-        const containerName = 'facestorage';
-        const blobServiceUrl = `https://facefinderstorageproject.blob.core.windows.net`;
-
-        const blobUrl = `${blobServiceUrl}/${containerName}/`;
-
-        try {
-            const response = await fetch(blobUrl, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': file.type
-                },
-                body: file
-            });
-
-            if (response.ok) {
-                alert('Imagen cargada con éxito');
-            } else {
-                throw new Error('Error al cargar la imagen');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Error al cargar la imagen');
+    async function sendDataToCosmosDB(id, data) {
+      try {
+        const response = await fetch('/api/createEntry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id, data })
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Data sent to Cosmos DB:', result);
+        } else {
+          throw new Error('Failed to send data to Cosmos DB');
         }
+      } catch (error) {
+        console.error(error);
+      }
     }
-</script>
-</html>
-
-
-<!-- TODO: 
-COntrolar comportamiento si la iamgen no tiene caras.
-Hacer CSS -->
+  
+    function processImage() {
+      var subscriptionKey = "1c8a0938df024623a98b21251f299565";
+      var uriBase =
+          "https://feelfinderai.cognitiveservices.azure.com/face/v1.0/detect";
+  
+      // Request parameters.
+      var params = {
+          "detectionModel": "detection_03",
+          "returnFaceId": "true"
+      };
+  
+      // Display the image.
+      var sourceImageUrl = document.getElementById("inputImage").value;
+      document.querySelector("#sourceImage").src = sourceImageUrl;
+  
+      // Perform the REST API call.
+      $.ajax({
+          url: uriBase + "?" + $.param(params),
+  
+          // Request headers.
+          beforeSend: function (xhrObj) {
+              xhrObj.setRequestHeader("Content-Type", "application/json");
+              xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
+          },
+  
+          type: "POST",
+  
+          // Request body.
+          data: '{"url": ' + '"' + sourceImageUrl + '"}',
+      })
+  
+          .done(function (data) {
+              // Show formatted JSON on webpage.
+              $("#responseTextArea").val(JSON.stringify(data, null, 2));
+  
+              // Draw rectangles around detected faces
+              var canvas = document.getElementById("canvas");
+              var context = canvas.getContext("2d");
+              context.clearRect(0, 0, canvas.width, canvas.height);
+              var img = document.getElementById('sourceImage');
+              canvas.width = img.width*2;
+              canvas.height = img.height*2;
+              context.drawImage(img, 0, 0);
+              context.strokeStyle = 'red';
+              context.lineWidth = 2;
+              data.forEach(function (face) {
+                  var faceRectangle = face.faceRectangle;
+                  context.beginPath();
+                  context.rect(faceRectangle.left, faceRectangle.top, faceRectangle.width, faceRectangle.height);
+                  context.stroke();
+              });
+  
+              // Send data to Cosmos DB
+              sendDataToCosmosDB('some-unique-id', data);
+          })
+  
+          .fail(function (jqXHR, textStatus, errorThrown) {
+              // Display error message.
+              var errorString = (errorThrown === "") ?
+                  "Error. " : errorThrown + " (" + jqXHR.status + "): ";
+              errorString += (jqXHR.responseText === "") ?
+                  "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
+                      jQuery.parseJSON(jqXHR.responseText).message :
+                      jQuery.parseJSON(jqXHR.responseText).error.message;
+              alert(errorString);
+          });
+    };
+  </script>
+  

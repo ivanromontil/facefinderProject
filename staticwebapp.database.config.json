@@ -5,6 +5,11 @@
             "route": "/api/*",
             "allowedRoles": ["anonymous"],
             "methods": ["GET", "POST"]
+        },
+        {
+            "route": "/api/createEntry/index.js",
+            "allowedRoles": ["anonymous"],
+            "methods": ["GET", "POST"]
         }
     ],
     "navigationFallback": {

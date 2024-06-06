@@ -145,24 +145,24 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
 
     async function listImages() {
         const query = `
-        {
+            {
             people {
                 items {
-                    id
-                    Name
+                id
+                Name
                 }
             }
-        }`;
-
+            }`;
+            
         const endpoint = "/data-api/graphql";
         try {
             const response = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query: query })
-            });
-            const result = await response.json();
-            const imageList = result.data.images.items;
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: query })
+        });
+        const result = await response.json();
+        console.table(result.data.people.items);
 
             const listContainer = document.getElementById("imageList");
             listContainer.innerHTML = "";

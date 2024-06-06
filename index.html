@@ -111,33 +111,34 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
 
 </div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/@azure/storage-blob/dist/index.browser.umd.min.js"></script>
 <script>
-    // Variables de configuración
-    const connectionString = "TuCadenaDeConexión";
-    const containerName = "nombreDeTuContenedor";
-    const blobServiceClient = new Azure.StorageBlob.BlobServiceClient(connectionString);
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-
-    // Función para cargar la imagen seleccionada
     async function uploadImage() {
+        const fileInput = document.getElementById('imageInput');
+        const file = fileInput.files[0];
+        const blobName = file.name;
+
+        const containerName = 'facestorage';
+        const blobServiceUrl = `https://facefinderstorageproject.blob.core.windows.net`;
+
+        const blobUrl = `${blobServiceUrl}/${containerName}/`;
+
         try {
-            // Obtiene el archivo de entrada
-            const fileInput = document.getElementById('imageInput');
-            const file = fileInput.files[0];
+            const response = await fetch(blobUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': file.type
+                },
+                body: file
+            });
 
-            // Crea un nombre de blob único
-            const blobName = `${Date.now()}-${file.name}`;
-
-            // Crea un BlobClient
-            const blobClient = containerClient.getBlobClient(blobName);
-
-            // Carga el archivo seleccionado al blob
-            const response = await blobClient.uploadData(file);
-
-            console.log("Imagen cargada exitosamente:", response.requestId);
+            if (response.ok) {
+                alert('Imagen cargada con éxito');
+            } else {
+                throw new Error('Error al cargar la imagen');
+            }
         } catch (error) {
-            console.error("Error al cargar la imagen:", error.message);
+            console.error(error);
+            alert('Error al cargar la imagen');
         }
     }
 </script>

@@ -1,51 +1,39 @@
 {
-  "$schema": "https://github.com/Azure/data-api-builder/releases/download/v0.9.7/dab.draft.schema.json",
+  "$schema": "https://github.com/Azure/data-api-builder/releases/latest/download/dab.draft.schema.json",
   "data-source": {
     "database-type": "cosmosdb_nosql",
-    "connection-string": "",
     "options": {
-      "database": "face-storage-testing",
-      "container": null,
+      "database": "MyTestPersonDatabase",
       "schema": "staticwebapp.database.schema.gql"
-    }
+    },
+    "connection-string": "@env('DATABASE_CONNECTION_STRING')"
   },
   "runtime": {
-    "rest": {
-      "enabled": false,
-      "path": "/api",
-      "request-body-strict": true
-    },
     "graphql": {
+      "allow-introspection": true,
       "enabled": true,
-      "path": "/graphql",
-      "allow-introspection": true
+      "path": "/graphql"
     },
     "host": {
+      "mode": "production",
       "cors": {
-        "origins": [],
+        "origins": ["http://localhost:4280"],
         "allow-credentials": false
       },
       "authentication": {
         "provider": "StaticWebApps"
-      },
-      "mode": "production"
+      }
     }
   },
-  "routes": [
+  "entities": {
+    "Person": {
+      "source": "MyTestPersonContainer",
+      "permissions": [
         {
-            "route": "/api/*",
-            "allowedRoles": ["anonymous"],
-            "methods": ["GET", "POST"]
-        },
-        {
-            "route": "/api/createEntry/index.js",
-            "allowedRoles": ["anonymous"],
-            "methods": ["GET", "POST"]
+          "actions": ["*"],
+          "role": "anonymous"
         }
-    ],
-    "navigationFallback": {
-        "rewrite": "index.html",
-        "exclude": ["/api/*"]
-    },
-  "entities": {}
+      ]
+    }
+  }
 }

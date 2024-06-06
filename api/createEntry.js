@@ -8,22 +8,22 @@ const databaseId = 'my-database';
 const containerId = 'my-container';
 
 module.exports = async function (context, req) {
-  const { id, data } = req.body;
+    const { url } = req.body;
 
-  try {
-    const { database } = await client.databases.createIfNotExists({ id: databaseId });
-    const { container } = await database.containers.createIfNotExists({ id: containerId });
+    try {
+        const { database } = await client.databases.createIfNotExists({ id: databaseId });
+        const { container } = await database.containers.createIfNotExists({ id: containerId });
 
-    const { resource: createdItem } = await container.items.create({ id, data });
+        const { resource: createdItem } = await container.items.create({ url });
 
-    context.res = {
-      status: 200,
-      body: createdItem
-    };
-  } catch (error) {
-    context.res = {
-      status: 500,
-      body: `Error: ${error.message}`
-    };
-  }
+        context.res = {
+            status: 200,
+            body: createdItem
+        };
+    } catch (error) {
+        context.res = {
+            status: 500,
+            body: `Error: ${error.message}`
+        };
+    }
 };

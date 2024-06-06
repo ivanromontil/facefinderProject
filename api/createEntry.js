@@ -1,22 +1,35 @@
+// api/createEntry/index.js
 const { CosmosClient } = require("@azure/cosmos");
 
-const endpoint = process.env.COSMOS_DB_CONNECTION_STRING;
-const key = process.env.COSMOS_DB_KEY;
+const config = require('../config');
+
+const endpoint = config.endpoint;
+const key = config.key;
+const databaseId = config.database.id;
+const containerId = config.container.id;
 
 const client = new CosmosClient({ endpoint, key });
-const databaseId = 'my-database';
-const containerId = 'my-container';
 
 module.exports = async function (context, req) {
+    context.log('JavaScript HTTP trigger function processed a request.');
+
     if (req.method !== 'POST') {
         context.res = {
             status: 405,
-            body: 'Method Not Allowed'
+            body: "Method Not Allowed"
         };
         return;
     }
 
     const { url } = req.body;
+
+    if (!url) {
+        context.res = {
+            status: 400,
+            body: "Please pass a URL in the request body"
+        };
+        return;
+    }
 
     try {
         const { database } = await client.databases.createIfNotExists({ id: databaseId });
@@ -31,7 +44,7 @@ module.exports = async function (context, req) {
     } catch (error) {
         context.res = {
             status: 500,
-            body: `Error: ${error.message}`
+            body: error.message
         };
     }
 };

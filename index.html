@@ -24,6 +24,23 @@ Image to analyze: <input type="text" name="inputImage" id="inputImage"
         <img id="sourceImage" width="400"/>
     </div>
 </div>
+
+<script> 
+    const { CosmosClient } = require("@azure/cosmos");
+
+    const endpoint = process.env.COSMOS_DB_CONNECTION_STRING;
+    const key = process.env.COSMOS_DB_KEY;
+
+    const client = new CosmosClient({ endpoint, key });
+
+    async function createDatabaseAndContainer() {
+        const { database } = await client.databases.createIfNotExists({ id: "my-database" });
+        const { container } = await database.containers.createIfNotExists({ id: "my-container" });
+        console.log(`Database and container created: ${database.id}, ${container.id}`);
+    }
+
+    createDatabaseAndContainer().catch(console.error);
+</script>
 <script type="text/javascript">
     function processImage() {
         var subscriptionKey = "1c8a0938df024623a98b21251f299565";

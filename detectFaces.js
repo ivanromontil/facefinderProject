@@ -1,4 +1,5 @@
 function processImage() {
+    //Variables per conectar-se a la Face API
     var subscriptionKey = "1c8a0938df024623a98b21251f299565";
     var uriBase = "https://feelfinderai.cognitiveservices.azure.com/face/v1.0/detect";
 
